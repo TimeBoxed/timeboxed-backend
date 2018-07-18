@@ -1,0 +1,23 @@
+{
+  "name": "timeboxed",
+  "version": "1.0.0",
+  "description": "Your virtual task management assistant",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/levibrooke/timeboxed.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/levibrooke/timeboxed/issues"
+  },
+  "homepage": "https://github.com/levibrooke/timeboxed#readme",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}
