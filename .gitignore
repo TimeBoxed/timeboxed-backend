@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 # Created by https://www.gitignore.io/api/vim,node,linux,macos,windows,visualstudio,visualstudiocode
 
@@ -499,3 +500,9 @@ ASALocalRun/
 
 
 # End of https://www.gitignore.io/api/vim,node,linux,macos,windows,visualstudio,visualstudiocode
+=======
+node_modules
+DS_Store
+.env
+
+>>>>>>> c3784c95cf401040ccb980c47757786cc0fc8ba4
