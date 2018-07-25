@@ -19,5 +19,8 @@
   "homepage": "https://github.com/levibrooke/timeboxed#readme",
   "dependencies": {
     "express": "^4.16.3"
+  },
+  "devDependencies": {
+    "winston": "^3.0.0"
   }
 }
