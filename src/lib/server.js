@@ -1,10 +1,18 @@
 'use strict';
 
 import express from 'express';
+import cors from 'cors';
+import googleRouter from '../routes/google-oauth';
 // import logger from './logger';
 
 const app = express();
 const server = null;
+
+app.use(cors({
+  credentials: true,
+  origin: ['http://localhost:8080'],
+}));
+app.use(googleRouter);
 
 app.all('*', (request, response) => {
   // logger.log(logger.INFO, 'Returning a 404 from the catch/all default route');
