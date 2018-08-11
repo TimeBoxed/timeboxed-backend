@@ -10,6 +10,8 @@ const GOOGLE_CALENDAR_URL = 'https://www.googleapis.com/calendar/v3/users/me/cal
 const googleRouter = new Router();
 const calendars = [];
 
+// TODO: Add account creation for new users
+
 // VANILLA LOGIN
 googleRouter.get('/oauth/google', (request, response) => {
   const user = {};
