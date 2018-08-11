@@ -23,6 +23,10 @@ GOOGLE_SECRET=<google-secret>
 
 ```
 
-To start, open two tabs in your terminal. In one tab, enter the following command: ```npm run dbon```, this starts your local database and will create a /db folder (you can delete this folder at any time and it will be recreated next time you run this command). In the other tab, enter ```nodemon``` (note that you may need to install nodemon if you don't already have it installed globally: ```npm install -g nodemon```), this will start the server.
+To start, open two tabs in your terminal:
+
+In one tab, enter the following command: ```npm run dbon```, this starts your local database and will create a /db folder (you can delete this folder at any time and it will be recreated next time you run this command). When finished testing, enter the command ```npm run dboff``` to properly turn the database off. 
+
+In the other tab, enter ```nodemon``` (note that you may need to install nodemon if you don't already have it installed globally: ```npm install -g nodemon```), this will start the server.
 
 You will also need to start the frontend for full functionality. See instructions here: https://github.com/TimeBoxed/timeboxed-frontend
