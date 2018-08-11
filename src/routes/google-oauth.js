@@ -1,5 +1,7 @@
 import superagent from 'superagent';
 import { Router } from 'express';
+import Account from '../model/account';
+import Profile from '../model/profile';
 
 require('dotenv').config();
 
@@ -10,10 +12,17 @@ const GOOGLE_CALENDAR_URL = 'https://www.googleapis.com/calendar/v3/users/me/cal
 const googleRouter = new Router();
 const calendars = [];
 
-// TODO: Add account creation for new users
+const createProfile = (user) => {
+  return new Profile({
+    username: user.username,
+    email: user.email,
+    account: user.id,
+    calendars: user.calendars,
+  }).save();
+};
 
 // VANILLA LOGIN
-googleRouter.get('/oauth/google', (request, response) => {
+googleRouter.get('/welcome', (request, response) => {
   const user = {};
   if (!request.query.code) {
     response.redirect(process.env.CLIENT_URL);
@@ -25,7 +34,7 @@ googleRouter.get('/oauth/google', (request, response) => {
         grant_type: 'authorization_code',
         client_id: process.env.GOOGLE_CLIENT_ID,
         client_secret: process.env.GOOGLE_SECRET,
-        redirect_uri: `${process.env.API_URL}/oauth/google`,
+        redirect_uri: `${process.env.API_URL}/welcome`,
       })
       .then((tokenResponse) => {
         if (!tokenResponse.body.access_token) {
@@ -52,9 +61,32 @@ googleRouter.get('/oauth/google', (request, response) => {
           };
           calendars.push(calendar);
         });
+        console.log('the user', user);
+        // return Account.findOne({ email: user.email })
+        //   .then((account) => {
+        //     if (!account) {
+        //       return Account.create(user.email, user.username)
+        //         .then((newAccount) => {
+        //           user.id = newAccount._id;
+        //           user.calendars = calendars;
+        //           return newAccount.pCreateLoginToken()
+        //             .then((token) => {
+        //               return createProfile(user)
+        //                 .then(() => {
+        //                   return response
+        //                     .cookie('GT1234567890', token, { maxAge: 900000 })
+        //                     .redirect(`${process.env.CLIENT_URL}/setup`);
+        //                 });
+        //             });
+        //         });
+        //     } 
+        //     return account.pCreateLoginToken()
+        //       .then((token) => {
         return response
           .cookie('GT1234567890', user.accessToken, { maxAge: 900000 })
           .redirect(`${process.env.CLIENT_URL}/setup`);
+        // });
+        // });
       })
       .catch(err => console.log(err.message));
   }

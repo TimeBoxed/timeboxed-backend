@@ -19,6 +19,9 @@ const profileSchema = mongoose.Schema({
     required: true,
     unique: true,
   },
+  calendars: {
+    type: Array,
+  },
   tasks: [
     {
       type: mongoose.Schema.Types.ObjectId,
