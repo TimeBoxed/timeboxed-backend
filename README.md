@@ -9,7 +9,7 @@ Your virtual task management assistant
 
 ## Getting Started
 
-In order to run locally, create a ```.env``` file at the root level of this repo (it will be gitignored). This file will need to look like the following (with the proper google client/secret credentials:
+In order to run locally, clone repo, and enter ```npm i``` in your terminal at the project's root level to install dependencies. Create a ```.env``` file at the root level of this repo (it will be gitignored). This file will need to look like the following (with the proper google client/secret credentials:
 
 ```
 NODE_ENV=development
