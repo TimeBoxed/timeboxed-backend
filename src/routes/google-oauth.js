@@ -10,10 +10,8 @@ const GOOGLE_CALENDAR_URL = 'https://www.googleapis.com/calendar/v3/users/me/cal
 const googleRouter = new Router();
 const calendars = [];
 
-// TODO: Add account creation for new users
-
 // VANILLA LOGIN
-googleRouter.get('/oauth/google', (request, response) => {
+googleRouter.get('/welcome', (request, response) => {
   const user = {};
   if (!request.query.code) {
     response.redirect(process.env.CLIENT_URL);
@@ -25,7 +23,7 @@ googleRouter.get('/oauth/google', (request, response) => {
         grant_type: 'authorization_code',
         client_id: process.env.GOOGLE_CLIENT_ID,
         client_secret: process.env.GOOGLE_SECRET,
-        redirect_uri: `${process.env.API_URL}/oauth/google`,
+        redirect_uri: `${process.env.API_URL}/welcome`,
       })
       .then((tokenResponse) => {
         if (!tokenResponse.body.access_token) {
@@ -52,6 +50,7 @@ googleRouter.get('/oauth/google', (request, response) => {
           };
           calendars.push(calendar);
         });
+        console.log('the user', user);
         return response
           .cookie('GT1234567890', user.accessToken, { maxAge: 900000 })
           .redirect(`${process.env.CLIENT_URL}/setup`);
