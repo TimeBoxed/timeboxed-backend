@@ -8,9 +8,6 @@ import HttpError from 'http-errors';
 const TOKEN_SEED_LENGTH = 128;
 
 const accountSchema = mongoose.Schema({
-
-  // TODO: Add googleID property
-
   email: {
     type: String,
     required: true,
