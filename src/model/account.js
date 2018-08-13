@@ -22,6 +22,11 @@ const accountSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  privacySigned: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
   createdOn: {
     type: Date,
     default: () => new Date(),

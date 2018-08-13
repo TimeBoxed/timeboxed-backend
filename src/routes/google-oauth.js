@@ -1,5 +1,7 @@
 import superagent from 'superagent';
 import { Router } from 'express';
+import Account from '../model/account';
+import Profile from '../model/profile';
 
 require('dotenv').config();
 
@@ -10,7 +12,15 @@ const GOOGLE_CALENDAR_URL = 'https://www.googleapis.com/calendar/v3/users/me/cal
 const googleRouter = new Router();
 const calendars = [];
 
-// VANILLA LOGIN
+const createProfile = (user) => {
+  return new Profile({
+    username: user.username,
+    email: user.email,
+    account: user.id,
+    calendars: user.calendars,
+  }).save();
+};
+
 googleRouter.get('/welcome', (request, response) => {
   const user = {};
   if (!request.query.code) {
@@ -50,18 +60,39 @@ googleRouter.get('/welcome', (request, response) => {
           };
           calendars.push(calendar);
         });
-        console.log('the user', user);
-        return response
-          .cookie('GT1234567890', user.accessToken, { maxAge: 900000 })
-          .redirect(`${process.env.CLIENT_URL}/setup`);
+        user.calendars = calendars;
+        return Account.findOne({ email: user.email })
+          .then((account) => {
+            if (!account) {
+              return Account.create(user.email, user.username)
+                .then((newAccount) => {
+                  user.id = newAccount._id;
+                  return newAccount.pCreateLoginToken();
+                })
+                .then((token) => {
+                  return createProfile(user)
+                    .then(() => {
+                      response
+                        .cookie('GT1234567890', token, { maxAge: 900000 })
+                        .redirect(`${process.env.CLIENT_URL}/setup`);
+                    });
+                });
+            } 
+            return account.pCreateLoginToken()
+              .then((token) => {
+                return response
+                  .cookie('GT1234567890', token, { maxAge: 900000 })
+                  .redirect(`${process.env.CLIENT_URL}/setup`);
+              });
+          });
       })
       .catch(err => console.log(err.message));
   }
   return response.redirect(process.env.CLIENT_URL);
 });
 
-googleRouter.get('/calendars', (request, response) => {
-  return response.send(calendars);
-});
+// googleRouter.get('/calendars', (request, response) => {
+//   return response.send(calendars);
+// });
 
 export default googleRouter;
