@@ -33,4 +33,4 @@ In one tab, enter the following command: ```npm run dbon```, this starts your lo
 In the other tab, enter ```nodemon``` (note that you may need to install nodemon if you don't already have it installed globally: ```npm install -g nodemon```), this will start the server.
 
 You will also need to start the frontend for full functionality. See instructions here:
-[TimeBoxed Front-End](https://github.com/TimeBoxed/timeboxed-frontend)
+[https://github.com/TimeBoxed/timeboxed-frontend](https://github.com/TimeBoxed/timeboxed-frontend)
