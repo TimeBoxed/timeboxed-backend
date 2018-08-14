@@ -1,13 +1,14 @@
 'use strict';
 
 import express from 'express';
+import mongoose from 'mongoose';
 import cors from 'cors';
 import googleRouter from '../routes/google-oauth';
 import profileRouter from '../routes/profile-router';
 import logger from './logger';
 
 const app = express();
-const server = null;
+let server = null;
 
 app.use(cors({
   credentials: true,
@@ -22,16 +23,27 @@ app.all('*', (request, response) => {
 });
 
 const startServer = () => {
-  return app.listen(process.env.PORT, () => {
-    console.log(`Server is listening on Port ${process.env.PORT}`);
-    logger.log(logger.INFO, `SERVER IS LISTENING ON PORT ${process.env.PORT}`);
-  });
+  return mongoose.connect(process.env.MONGODB_URI)
+    .then(() => {
+      server = app.listen(process.env.PORT, () => {
+        logger.log(logger.INFO, `SERVER IS LISTENING ON PORT ${process.env.PORT}`);
+      });
+    })
+    .catch((err) => {
+      logger.log(logger.ERROR, `SERVER START ERROR ${JSON.stringify(err)}`);
+    });
 };
 
 const stopServer = () => {
-  return server.close(() => {
-    logger.log(logger.INFO, 'SERVER IS OFF');
-  });
+  return mongoose.disconnect()
+    .then(() => {
+      server.close(() => {
+        logger.log(logger.INFO, 'SERVER IS OFF');
+      });
+    })
+    .catch((err) => {
+      logger.log(logger.ERROR, `STOP SERVER ERROR, ${JSON.stringify(err)}`);
+    });
 };
 
 export { startServer, stopServer };

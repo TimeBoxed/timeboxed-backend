@@ -10,8 +10,10 @@ const profileRouter = new Router();
 const jsonParser = json();
 
 profileRouter.get('/profiles/me', bearerAuthMiddleware, (request, response, next) => {
+  console.log(request.account.id);
   return Profile.findOne({ account: request.account.id })
     .then((profile) => {
+      console.log(profile, 'inside profile router');
       logger.log(logger.INFO, 'Returning a 200 status code and requested Profile');
       return response.json(profile);
     })
@@ -23,6 +25,15 @@ profileRouter.get('/profiles/:id', bearerAuthMiddleware, (request, response, nex
     .then((profile) => {
       logger.log(logger.INFO, 'Returning a 200 status code and requested Profile');
       return response.json(profile);
+    })
+    .catch(next);
+});
+
+profileRouter.get('/profile/calendars/:id', bearerAuthMiddleware, (request, response, next) => {
+  return Profile.findById(request.params.id)
+    .then((profile) => {
+      logger.log(logger.INFO, 'Returning a 200 status code and requested Calendars in Profile Router');
+      return response.send(profile.calendars);
     })
     .catch(next);
 });
