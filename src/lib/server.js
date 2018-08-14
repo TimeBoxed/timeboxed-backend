@@ -5,7 +5,6 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import googleRouter from '../routes/google-oauth';
 import profileRouter from '../routes/profile-router';
-import accountRouter from '../routes/account-router';
 import logger from './logger';
 
 const app = express();
@@ -17,7 +16,6 @@ app.use(cors({
 }));
 app.use(googleRouter);
 app.use(profileRouter);
-app.use(accountRouter);
 
 app.all('*', (request, response) => {
   logger.log(logger.INFO, 'Returning a 404 from the catch/all default route');

@@ -74,7 +74,7 @@ googleRouter.get('/welcome', (request, response) => {
                     .then(() => {
                       response
                         .cookie('GT1234567890', token, { maxAge: 900000 })
-                        .redirect(`${process.env.CLIENT_URL}/setup`);
+                        .redirect(`${process.env.CLIENT_URL}/privacy`);
                     });
                 });
             } 
