@@ -14,10 +14,20 @@ const profileSchema = mongoose.Schema({
     required: true,
     unique: true,
   },
+  phoneNumber: {
+    type: String,
+  },
   account: {
     type: mongoose.Schema.ObjectId,
     required: true,
     unique: true,
+  },
+  calendars: {
+    type: Array,
+  },
+  preferences: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'preferences',
   },
   tasks: [
     {
