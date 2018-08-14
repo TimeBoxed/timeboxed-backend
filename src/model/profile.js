@@ -17,6 +17,11 @@ const profileSchema = mongoose.Schema({
   phoneNumber: {
     type: String,
   },
+  privacySigned: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
   account: {
     type: mongoose.Schema.ObjectId,
     required: true,
