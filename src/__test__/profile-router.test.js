@@ -47,8 +47,6 @@ describe('PROFILE ROUTES', () => {
       return createProfileMock()
         .then((profileSetMock) => {
           profileMock = profileSetMock;
-          console.log(profileMock.profile);
-          console.log(`${apiURL}/profiles/${profileMock.profile._id}`);
           return superagent.get(`${apiURL}/profiles/${profileMock.profile._id}`)
             .set('Authorization', `Bearer ${profileMock.googleToken}`)
             .then((response) => {
