@@ -38,4 +38,20 @@ taskRouter.get('/tasks/:id', bearerAuthMiddleware, (request, response, next) => 
     .catch(next);
 });
 
+taskRouter.delete('/tasks/:id', bearerAuthMiddleware, (request, response, next) => {
+  console.log(request.params.id);
+  return Task.findById(request.params.id)
+    .then((task) => {
+      if (!task) return next(new HttpError(404, 'TASK ROUTER ERROR: task not found'));
+      console.log(task, 'this is the task that was removed');
+
+      return task.remove();
+    })
+    .then(() => {
+      logger.log(logger.INFO, '204 - TASK DELETED');
+      return response.sendStatus(204);
+    })
+    .catch(next);
+});
+
 export default taskRouter;
