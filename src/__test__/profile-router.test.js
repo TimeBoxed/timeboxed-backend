@@ -13,7 +13,7 @@ describe('PROFILE ROUTES', () => {
   afterAll(stopServer);
 
   describe('GET /profiles/me', () => { 
-    test('GET - should return a 200 status code and profile', () => {
+    test('GET /profiles/me - should return a 200 status code and profile', () => {
       let profileMock = null;
 
       return createProfileMock()
@@ -27,6 +27,15 @@ describe('PROFILE ROUTES', () => {
               expect(response.body.username).toEqual(profileMock.profile.username);
               expect(response.body.privacySigned).toEqual(false);
               expect(response.body.account).toEqual(profileMock.profile.account.toString());
+            });
+        });
+    });
+    test('GET /profiles/me - should return a 400 for no token being passed.', () => {
+      return createProfileMock()
+        .then(() => {
+          return superagent.get(`${apiURL}/profiles/me`)
+            .catch((error) => {
+              expect(error.status).toEqual(400);
             });
         });
     });
