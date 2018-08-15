@@ -40,7 +40,7 @@ function savePreHook(done) {
       if (profileFound.tasks.indexOf(this._id) < 0) {
         profileFound.tasks.push(this._id);
       }
-      return profileFound.save()
+      return profileFound.save();
     })
     .then(() => {
       return done();
