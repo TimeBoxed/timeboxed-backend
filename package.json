@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "test": "jest --coverage",
+    "testdebug": "jest --detectOpenHandles",
     "dbon": "mkdir -p ./db && mongod --dbpath ./db",
     "dboff": "killall mongod"
   },
