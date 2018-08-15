@@ -5,12 +5,14 @@ import mongoose from 'mongoose';
 const preferencesSchema = mongoose.Schema({
   phoneNumber: {
     type: String,
+    default: 'Not yet added',
   },
   email: {
     type: String,
   },
   agendaReceiveTime: {
     type: Date,
+    default: 'Not yet specified',
   },
   taskLengthDefault: {
     type: Number,

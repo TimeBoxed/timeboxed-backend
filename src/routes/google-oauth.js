@@ -19,7 +19,11 @@ const createPreferences = (profile) => {
     email: profile.email,
     selectedCalendarId: selectedCalendar[0],
     profile: profile._id,
-  }).save();
+  }).save()
+    .then((preferences) => {
+      const options = { runValidators: true, new: true };
+      return Profile.findByIdAndUpdate(profile._id, { preferences: preferences._id }, options);
+    });
 };
 
 const createProfile = (user) => {
