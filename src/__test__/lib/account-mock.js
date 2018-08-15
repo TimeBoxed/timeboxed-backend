@@ -14,14 +14,14 @@ const createAccountMock = () => {
   return Account.create(
     mock.request.username,
     mock.request.email,
-    mock.request.accessToken,
+    mock.request.tokenSeed,
   )
     .then((account) => {
       mock.account = account;
       return account.pCreateLoginToken();
     })
     .then((token) => {
-      mock.token = token;
+      mock.googleToken = token;
       return Account.findById(mock.account._id);
     })
     .then((account) => {
