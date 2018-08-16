@@ -6,6 +6,7 @@ import cors from 'cors';
 import googleRouter from '../routes/google-oauth';
 import profileRouter from '../routes/profile-router';
 import taskRouter from '../routes/task-router';
+import preferencesRouter from '../routes/preferences-router';
 import logger from './logger';
 
 const app = express();
@@ -18,6 +19,7 @@ app.use(cors({
 app.use(googleRouter);
 app.use(profileRouter);
 app.use(taskRouter);
+app.use(preferencesRouter);
 
 app.all('*', (request, response) => {
   logger.log(logger.INFO, 'Returning a 404 from the catch/all default route');

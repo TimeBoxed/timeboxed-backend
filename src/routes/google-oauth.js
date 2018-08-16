@@ -2,6 +2,7 @@ import superagent from 'superagent';
 import { Router } from 'express';
 import Account from '../model/account';
 import Profile from '../model/profile';
+import Preferences from '../model/preferences';
 import logger from '../lib/logger';
 
 require('dotenv').config();
@@ -12,13 +13,29 @@ const GOOGLE_CALENDAR_URL = 'https://www.googleapis.com/calendar/v3/users/me/cal
 
 const googleRouter = new Router();
 
+const createPreferences = (profile) => {
+  const selectedCalendar = profile.calendars.filter(item => item.name === profile.email);
+  return new Preferences({
+    email: profile.email,
+    selectedCalendarId: selectedCalendar[0],
+    profile: profile._id,
+  }).save()
+    .then((preferences) => {
+      const options = { runValidators: true, new: true };
+      return Profile.findByIdAndUpdate(profile._id, { preferences: preferences._id }, options);
+    });
+};
+
 const createProfile = (user) => {
   return new Profile({
     username: user.username,
     email: user.email,
     account: user.id,
     calendars: user.calendars,
-  }).save();
+  }).save()
+    .then((profile) => {
+      return createPreferences(profile);
+    });
 };
 
 const getCalendars = (user) => {
@@ -117,9 +134,5 @@ googleRouter.get('/welcome', (request, response) => {
   }
   return response.redirect(process.env.CLIENT_URL);
 });
-
-// googleRouter.get('/calendars', (request, response) => {
-//   return response.send(calendars);
-// });
 
 export default googleRouter;
