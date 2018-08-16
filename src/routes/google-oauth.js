@@ -44,7 +44,7 @@ const getCalendars = (user) => {
     });
 };
 
-const accountFindOrCreate = (user) => {
+const accountFindOrCreate = (user, response) => {
   return Account.findOne({ email: user.email })
     .then((account) => {
       if (!account) {
@@ -57,12 +57,22 @@ const accountFindOrCreate = (user) => {
             return createProfile(user)
               .then(() => {
                 return token;
+              })
+              .then(() => {
+                return response
+                  .cookie('GT1234567890', token, { maxAge: 900000 })
+                  .redirect(`${process.env.CLIENT_URL}/privacy`);
               });
           });
       }
       return account.pCreateLoginToken()
         .then((token) => {
           return token;
+        })
+        .then((token) => {
+          return response
+            .cookie('GT1234567890', token, { maxAge: 900000 })
+            .redirect(`${process.env.CLIENT_URL}/dashboard`);
         });
     });
 };
@@ -96,7 +106,7 @@ googleRouter.get('/welcome', (request, response) => {
       })
       .then((calendars) => {
         user.calendars = calendars;
-        return accountFindOrCreate(user);
+        return accountFindOrCreate(user, response);
       })
       .then((token) => {
         return response
