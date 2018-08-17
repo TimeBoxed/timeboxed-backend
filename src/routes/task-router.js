@@ -39,7 +39,7 @@ taskRouter.get('/tasks/:profileId', bearerAuthMiddleware, (request, response, ne
 taskRouter.delete('/tasks/:taskId', bearerAuthMiddleware, (request, response, next) => {
   return Task.findById(request.params.taskId)
     .then((task) => {
-      if (!task) return next(new HttpError(404, 'TASK ROUTER ERROR: task not found'));
+      logger.log(logger.INFO, `TASK ROUTER - REMOVING TASK FOUND AT ${request.params.taskId}`);
       return task.remove();
     })
     .then(() => {

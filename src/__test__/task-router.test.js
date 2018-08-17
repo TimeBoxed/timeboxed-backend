@@ -30,6 +30,30 @@ describe('TASK ROUTES', () => {
           expect(response.body.profile.toString()).toEqual(profileToCompare._id.toString());
         });
     });
+    test('should throw 404 error if profile is not passed', () => {
+      return createProfileMock()
+        .then((profileMock) => {
+          return superagent.post(`${apiURL}/tasks`)
+            .set('Authorization', `Bearer ${profileMock.token}`)
+            .send({ title: 'Task without profile' });
+        })
+        .then(Promise.reject)
+        .catch((err) => {
+          expect(err.status).toEqual(404);
+        });
+    });
+    test('should throw 400 error if title is not passed', () => {
+      return createProfileMock()
+        .then((profileMock) => {
+          return superagent.post(`${apiURL}/tasks`)
+            .set('Authorization', `Bearer ${profileMock.token}`)
+            .send({ profile: profileMock.profile._id });
+        })
+        .then(Promise.reject)
+        .catch((err) => {
+          expect(err.status).toEqual(400);
+        });
+    });
   });
 
   describe('GET /tasks/:profileId', () => {
@@ -48,9 +72,42 @@ describe('TASK ROUTES', () => {
           expect(response.body[0].profile.toString()).toEqual(taskToCompare.profile.toString());
         });
     });
+
+    test('should throw 500 error if invalid profile id is passed', () => {
+      return createTaskMock()
+        .then((taskMock) => {
+          return superagent.get(`${apiURL}/tasks/INVALIDPROFILE`)
+            .set('Authorization', `Bearer ${taskMock.token}`);
+        })
+        .then(Promise.reject)
+        .catch((err) => {
+          expect(err.status).toEqual(500);
+        });
+    });
   });
 
   describe('DELETE /tasks/:taskId', () => {
+    test('should return 204 status code', () => {
+      return createTaskMock()
+        .then((taskMock) => {
+          return superagent.del(`${apiURL}/tasks/${taskMock.task._id}`)
+            .set('Authorization', `Bearer ${taskMock.token}`);
+        })
+        .then((response) => {
+          expect(response.status).toEqual(204);
+        });
+    });
 
-  })
+    test('should return 500 if task id is invalid', () => {
+      return createProfileMock()
+        .then((taskMock) => {
+          return superagent.del(`${apiURL}/tasks/INVALIDTASKID`)
+            .set('Authorization', `Bearer ${taskMock.token}`);
+        })
+        .then(Promise.reject)
+        .catch((err) => {
+          expect(err.status).toEqual(500);
+        });
+    });
+  });
 });
