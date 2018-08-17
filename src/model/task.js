@@ -10,6 +10,7 @@ const taskSchema = mongoose.Schema({
   },
   timeEstimate: {
     type: Number,
+    default: 30, // TODO: replace with user's specified default size
   },
   completed: {
     type: Boolean,

@@ -20,7 +20,7 @@ describe('PROFILE ROUTES', () => {
           profileMock = profileSetMock;
 
           return superagent.get(`${apiURL}/profiles/me`)
-            .set('Authorization', `Bearer ${profileMock.googleToken}`)
+            .set('Authorization', `Bearer ${profileMock.token}`)
             .then((response) => {
               expect(response.status).toEqual(200);
               expect(response.body.username).toEqual(profileMock.profile.username);
@@ -48,7 +48,7 @@ describe('PROFILE ROUTES', () => {
         .then((profileSetMock) => {
           profileMock = profileSetMock;
           return superagent.get(`${apiURL}/profiles/${profileMock.profile._id}`)
-            .set('Authorization', `Bearer ${profileMock.googleToken}`)
+            .set('Authorization', `Bearer ${profileMock.token}`)
             .then((response) => {
               expect(response.status).toEqual(200);
             });
