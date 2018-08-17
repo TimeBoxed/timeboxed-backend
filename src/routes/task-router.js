@@ -27,8 +27,8 @@ taskRouter.post('/tasks', bearerAuthMiddleware, jsonParser, (request, response, 
     .catch(next);
 });
 
-taskRouter.get('/tasks/:id', bearerAuthMiddleware, (request, response, next) => {
-  return Task.find({ profile: request.params.id })
+taskRouter.get('/tasks/:profileId', bearerAuthMiddleware, (request, response, next) => {
+  return Task.find({ profile: request.params.profileId })
     .then((tasks) => {
       logger.log(logger.INFO, '200 - TASK ROUTER - GET ALL');
       return response.json(tasks);
@@ -36,13 +36,10 @@ taskRouter.get('/tasks/:id', bearerAuthMiddleware, (request, response, next) => 
     .catch(next);
 });
 
-taskRouter.delete('/tasks/:id', bearerAuthMiddleware, (request, response, next) => {
-  console.log(request.params.id);
-  return Task.findById(request.params.id)
+taskRouter.delete('/tasks/:taskId', bearerAuthMiddleware, (request, response, next) => {
+  return Task.findById(request.params.taskId)
     .then((task) => {
       if (!task) return next(new HttpError(404, 'TASK ROUTER ERROR: task not found'));
-      console.log(task, 'this is the task that was removed');
-
       return task.remove();
     })
     .then(() => {

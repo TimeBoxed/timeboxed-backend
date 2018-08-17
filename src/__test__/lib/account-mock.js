@@ -1,6 +1,7 @@
 'use strict';
 
 import faker from 'faker';
+import uuid from 'uuid/v4';
 import Account from '../../model/account';
 
 const createAccountMock = () => {
@@ -8,20 +9,20 @@ const createAccountMock = () => {
   mock.request = {
     username: faker.lorem.word(),
     email: faker.internet.email(),
-    tokenSeed: faker.lorem.words(),
+    googleToken: uuid(),
   };
 
   return Account.create(
     mock.request.username,
     mock.request.email,
-    mock.request.tokenSeed,
+    mock.request.googleToken,
   )
     .then((account) => {
       mock.account = account;
       return account.pCreateLoginToken();
     })
     .then((token) => {
-      mock.googleToken = token;
+      mock.token = token;
       return Account.findById(mock.account._id);
     })
     .then((account) => {
