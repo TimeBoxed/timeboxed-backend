@@ -27,7 +27,7 @@ app.all('*', (request, response) => {
 });
 
 const startServer = () => {
-  return mongoose.connect(process.env.MONGODB_URI)
+  return mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true })
     .then(() => {
       server = app.listen(process.env.PORT, () => {
         logger.log(logger.INFO, `SERVER IS LISTENING ON PORT ${process.env.PORT}`);

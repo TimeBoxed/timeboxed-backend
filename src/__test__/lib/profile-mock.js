@@ -1,6 +1,5 @@
 'use strict';
 
-import faker from 'faker';
 import Profile from '../../model/profile';
 import { createAccountMock, removeAccountMock } from './account-mock';
 
@@ -12,8 +11,8 @@ const createProfileMock = () => {
       resultMock = accountSetMock;
 
       return new Profile({
-        username: faker.lorem.word(),
-        email: faker.internet.email(),
+        username: resultMock.account.username,
+        email: resultMock.account.email,
         privacySigned: false,
         account: resultMock.account._id,
       }).save();

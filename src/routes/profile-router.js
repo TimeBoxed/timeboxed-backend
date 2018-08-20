@@ -2,6 +2,8 @@
 
 import { Router } from 'express';
 import { json } from 'body-parser';
+import HttpError from 'http-errors';
+
 import Profile from '../model/profile';
 import logger from '../lib/logger';
 import bearerAuthMiddleware from '../lib/bearer-auth-middleware';
@@ -42,6 +44,17 @@ profileRouter.put('/profile', bearerAuthMiddleware, jsonParser, (request, respon
     .then((profile) => {
       logger.log(logger.INFO, 'Returning a 200 status code and updated Profile');
       return response.json(profile);
+    })
+    .catch(next);
+});
+
+profileRouter.delete('/profile/:id', bearerAuthMiddleware, (request, response, next) => {
+  return Profile.findById(request.params.id)
+    .then((profile) => {
+      if (!profile) return next(new HttpError(404, 'profile not found.'));
+      logger.log(logger.INFO, 'DELETE - Profile successfully deleted.');
+      profile.remove();
+      return response.sendStatus(204);
     })
     .catch(next);
 });
