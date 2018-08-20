@@ -17,7 +17,7 @@ const createPreferences = (profile) => {
   const selectedCalendar = profile.calendars.filter(item => item.name === profile.email);
   return new Preferences({
     email: profile.email,
-    selectedCalendarId: selectedCalendar[0],
+    selectedCalendar: selectedCalendar[0],
     profile: profile._id,
   }).save()
     .then((preferences) => {

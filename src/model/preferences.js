@@ -24,7 +24,7 @@ const preferencesSchema = mongoose.Schema({
     type: Number,
     default: 15,
   },
-  selectedCalendarId: {
+  selectedCalendar: {
     type: Object,
   },
   profile: {
