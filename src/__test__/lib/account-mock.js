@@ -7,14 +7,14 @@ import Account from '../../model/account';
 const createAccountMock = () => {
   const mock = {};
   mock.request = {
-    username: faker.lorem.word(),
+    username: faker.internet.userName(),
     email: faker.internet.email(),
     googleToken: uuid(),
   };
 
   return Account.create(
-    mock.request.username,
     mock.request.email,
+    mock.request.username,
     mock.request.googleToken,
   )
     .then((account) => {

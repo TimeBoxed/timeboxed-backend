@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "jest --coverage --runInBand --forceExit --watchAll",
+    "test": "jest --coverage --runInBand --forceExit",
     "testdebug": "jest --runInBand --detectOpenHandles",
     "dbon": "mkdir -p ./db && mongod --dbpath ./db",
     "dboff": "killall mongod"
