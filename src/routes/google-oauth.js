@@ -77,7 +77,7 @@ const accountFindOrCreate = (user, response) => {
               })
               .then(() => {
                 return response
-                  .cookie('GT1234567890', token, { maxAge: 900000 })
+                  .cookie('GT1234567890', token, { maxAge: 1800000 })
                   .redirect(`${process.env.CLIENT_URL}/privacy`);
               });
           });
@@ -88,7 +88,7 @@ const accountFindOrCreate = (user, response) => {
         })
         .then((token) => {
           return response
-            .cookie('GT1234567890', token, { maxAge: 900000 })
+            .cookie('GT1234567890', token, { maxAge: 1800000 })
             .redirect(`${process.env.CLIENT_URL}/dashboard`);
         });
     });
@@ -127,7 +127,7 @@ googleRouter.get('/welcome', (request, response) => {
       })
       .then((token) => {
         return response
-          .cookie('GT1234567890', token, { maxAge: 900000 })
+          .cookie('GT1234567890', token, { maxAge: 1800000 })
           .redirect(`${process.env.CLIENT_URL}/dashboard`);
       })
       .catch(err => console.log(err.message));

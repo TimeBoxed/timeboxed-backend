@@ -36,6 +36,18 @@ taskRouter.get('/tasks/:profileId', bearerAuthMiddleware, (request, response, ne
     .catch(next);
 });
 
+taskRouter.put('/tasks/:taskId', bearerAuthMiddleware, jsonParser, (request, response, next) => {
+  console.log(request.body, 'request body', request.params.taskId);
+  const options = { runValidators: true, new: true };
+  return Task.findByIdAndUpdate(request.params.taskId, request.body, options)
+    .then((task) => {
+      console.log(task, 'task after updating');
+      logger.log(logger.INFO, '200 - TASK Updated');
+      return response.json(task);
+    })
+    .catch(next);
+});
+
 taskRouter.delete('/tasks/:taskId', bearerAuthMiddleware, (request, response, next) => {
   return Task.findById(request.params.taskId)
     .then((task) => {
