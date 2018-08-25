@@ -110,4 +110,22 @@ describe('TASK ROUTES', () => {
         });
     });
   });
+
+  describe('PUT /tasks/:taskId', () => {
+    test('should return updated task and 200 status code', () => {
+      let taskToUpdate = null;
+      return createTaskMock()
+        .then((taskMock) => {
+          taskToUpdate = taskMock.task;
+          return superagent.put(`${apiURL}/tasks/${taskMock.task._id}`)
+            .set('Authorization', `Bearer ${taskMock.token}`)
+            .send({ title: 'UPDATED TITLE' });
+        })
+        .then((response) => {
+          expect(response.status).toEqual(200);
+          expect(response.body.title).toEqual('UPDATED TITLE');
+          expect(response.body._id.toString()).toEqual(taskToUpdate._id.toString());
+        });
+    });
+  });
 });
