@@ -15,6 +15,7 @@ const createProfileMock = () => {
         email: resultMock.account.email,
         privacySigned: false,
         account: resultMock.account._id,
+        calendars: ['Work', 'Personal', 'School'],
       }).save();
     })
     .then((profile) => {

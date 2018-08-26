@@ -56,6 +56,41 @@ describe('PROFILE ROUTES', () => {
     });
   });
 
+  describe('GET /profiles/calendars/:id', () => {
+    test('should return 200 status code and profiles calendars', () => {
+      let profileToCompare = null;
+      return createProfileMock()
+        .then((profileMock) => {
+          profileToCompare = profileMock.profile;
+          return superagent.get(`${apiURL}/profile/calendars/${profileMock.profile._id}`)
+            .set('Authorization', `Bearer ${profileMock.token}`);
+        })
+        .then((response) => {
+          expect(response.status).toEqual(200);
+          expect(response.body).toHaveLength(3);
+          expect(response.body[0]).toEqual(profileToCompare.calendars[0]);
+        });
+    });
+  });
+
+  describe('PUT /profile', () => {
+    test('should return 200 status code and updated profile', () => {
+      let profileToUpdate = null;
+      return createProfileMock()
+        .then((profileMock) => {
+          profileToUpdate = profileMock.profile;
+          return superagent.put(`${apiURL}/profile`)
+            .set('Authorization', `Bearer ${profileMock.token}`)
+            .send({ privacySigned: true });
+        })
+        .then((response) => {
+          expect(response.status).toEqual(200)
+          expect(response.body.privacySigned).toEqual(true);
+          expect(response.body._id.toString()).toEqual(profileToUpdate._id.toString());
+        });
+    });
+  });
+
   describe('DELETE - /profiles/:id', () => {
     test('DELETE - should return a 204 upon a successful Profile deletion.', () => {
       let deleteProfileMock = null;
