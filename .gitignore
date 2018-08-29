@@ -4,6 +4,13 @@ build/
 **.env
 .*.env
 
+# SSL files
+
+server.crt
+server.csr
+server.key
+server.pass.key
+
 # Created by https://www.gitignore.io/api/vim,node,macos,linux,windows,webstorm,visualstudiocode
 
 ### Linux ###
