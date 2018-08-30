@@ -14,7 +14,7 @@ let server = null;
 
 app.use(cors({
   credentials: true,
-  origin: ['http://localhost:8080'],
+  origin: [process.env.CLIENT_URL],
 }));
 app.use(googleRouter);
 app.use(profileRouter);
