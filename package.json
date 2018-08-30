@@ -4,11 +4,12 @@
   "description": "Your virtual task management assistant",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
     "test": "jest --coverage --runInBand --forceExit",
     "testdebug": "jest --runInBand --detectOpenHandles",
     "dbon": "mkdir -p ./db && mongod --dbpath ./db",
-    "dboff": "killall mongod"
+    "dboff": "killall mongod",
+    "build": "babel src -d build",
+    "start": "babel src -d build && node index.js"
   },
   "repository": {
     "type": "git",
