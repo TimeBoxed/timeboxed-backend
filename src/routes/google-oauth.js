@@ -189,7 +189,6 @@ googleRouter.get('/oauth/signin', (request, response) => {
         if (!account) {
           return response.redirect(process.env.CLIENT_URL);
         }
-        console.log(account, 'this is the account');
         return account.pCreateLoginToken();
       })
       .then((token) => {
