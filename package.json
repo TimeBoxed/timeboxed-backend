@@ -28,7 +28,7 @@
     "express": "^4.16.3",
     "faker": "^4.1.0",
     "mongoose": "^5.2.5",
-    "nodemon": "^1.18.3",
+    "nodemon": "^1.18.4",
     "uuid": "^3.3.2"
   },
   "devDependencies": {

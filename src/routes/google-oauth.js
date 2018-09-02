@@ -108,6 +108,7 @@ const accountFindOrCreate = (user, response) => {
     });
 };
 
+// ------ New User ----------
 googleRouter.get('/welcome', (request, response) => {
   const user = {};
   if (!request.query.code) {
@@ -138,6 +139,57 @@ googleRouter.get('/welcome', (request, response) => {
       .then((calendars) => {
         user.calendars = calendars;
         return accountFindOrCreate(user, response);
+      })
+      .then((token) => {
+        return response
+          .cookie('GT1234567890', token, { 
+            secure: false, 
+            maxAge: 1800000, 
+            domain: process.env.DOMAIN,
+            path: '/', 
+            signed: false, 
+            httpOnly: false,
+          })
+          .redirect(`${process.env.CLIENT_URL}/dashboard`);
+      })
+      .catch(err => console.log(err.message));
+  }
+  return response.redirect(process.env.CLIENT_URL);
+});
+
+// ------ Returning User ----------
+googleRouter.get('/oauth/signin', (request, response) => {
+  const user = {};
+  if (!request.query.code) {
+    response.redirect(process.env.CLIENT_URL);
+  } else {
+    return superagent.post(GOOGLE_OAUTH_URL)
+      .type('form')
+      .send({
+        code: request.query.code,
+        grant_type: 'authorization_code',
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_SECRET,
+        redirect_uri: `${process.env.API_URL}/oauth/signin`,
+      })
+      .then((tokenResponse) => {
+        if (!tokenResponse.body.access_token) {
+          return response.redirect(process.env.CLIENT_URL);
+        }
+        user.googleToken = tokenResponse.body.access_token;
+        return superagent.get(GOOGLE_OPENID_URL)
+          .set('Authorization', `Bearer ${user.googleToken}`);
+      })
+      .then((openIdResponse) => {
+        user.username = openIdResponse.body.name;
+        user.email = openIdResponse.body.email;
+        return Account.findOne({ email: user.email });
+      })
+      .then((account) => {
+        if (!account) {
+          return response.redirect(process.env.CLIENT_URL);
+        }
+        return account.pCreateLoginToken();
       })
       .then((token) => {
         return response
