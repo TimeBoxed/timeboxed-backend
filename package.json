@@ -23,8 +23,10 @@
   },
   "homepage": "https://github.com/levibrooke/timeboxed#readme",
   "dependencies": {
-    "cors": "^2.8.4",
     "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0",
+    "cors": "^2.8.4",
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
     "faker": "^4.1.0",
@@ -34,8 +36,6 @@
   },
   "devDependencies": {
     "babel-eslint": "^8.2.6",
-    "babel-preset-env": "^1.7.0",
-    "babel-register": "^6.26.0",
     "body-parser": "^1.18.3",
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^13.0.0",
