@@ -16,13 +16,16 @@ In order to run locally, clone repo, and enter ```npm i``` in your terminal at t
 ``` env
 
 NODE_ENV=development
-MONGODB_URI=mongodb://localhost/testing
+MONGODB_URI=mongodb://localhost:27017/timeBoxed-testing
 PORT=3000
 API_URL=http://localhost:3000
+CORS_ORIGINS=http://localhost:8080
 CLIENT_URL=http://localhost:8080
 HASH_SECRET_STRING=<long-random-string>
 GOOGLE_CLIENT_ID=<google-client-id>
 GOOGLE_SECRET=<google-secret>
+TIMEBOXED_SECRET=<long-random-string>
+HASH_SECRET_STRING=<long-random-string>
 
 ```
 
