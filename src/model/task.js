@@ -16,6 +16,9 @@ const taskSchema = mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  order: {
+    type: Number,
+  },
   createdOn: {
     type: Date,
     default: () => new Date(),
