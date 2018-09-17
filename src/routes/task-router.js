@@ -46,6 +46,23 @@ taskRouter.put('/tasks/:taskId', bearerAuthMiddleware, jsonParser, (request, res
     .catch(next);
 });
 
+taskRouter.put('/tasks', bearerAuthMiddleware, jsonParser, (request, response, next) => {
+  const updatedTasks = [];
+  const options = { runValidators: true, new: true };
+  return Promise.all(request.body.map((oneTask, index) => {
+    return Task.findByIdAndUpdate(oneTask._id, { order: index }, options)
+      .then((task) => {
+        logger.log(logger.INFO, `TASK ROUTER - REMOVING TASK FOUND AT ${task}`);
+        updatedTasks.push(task);
+      });
+  }))
+    .then(() => {
+      logger.log(logger.INFO, '204 - TASK DELETED');
+      return response.json(updatedTasks);
+    })
+    .catch(next);
+});
+
 taskRouter.delete('/tasks/:taskId', bearerAuthMiddleware, (request, response, next) => {
   return Task.findById(request.params.taskId)
     .then((task) => {
