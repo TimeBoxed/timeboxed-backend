@@ -52,12 +52,12 @@ taskRouter.put('/tasks', bearerAuthMiddleware, jsonParser, (request, response, n
   return Promise.all(request.body.map((oneTask, index) => {
     return Task.findByIdAndUpdate(oneTask._id, { order: index }, options)
       .then((task) => {
-        logger.log(logger.INFO, `TASK ROUTER - REMOVING TASK FOUND AT ${task}`);
+        logger.log(logger.INFO, `TASK ROUTER - UPDATING TASK FOUND AT ${task}`);
         updatedTasks.push(task);
       });
   }))
     .then(() => {
-      logger.log(logger.INFO, '204 - TASK DELETED');
+      logger.log(logger.INFO, '200 - BULK TASK UPDATE');
       return response.json(updatedTasks);
     })
     .catch(next);
