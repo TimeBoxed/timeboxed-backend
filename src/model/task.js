@@ -30,12 +30,9 @@ const taskSchema = mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     required: true,
   },
-  subtasks: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'subtask',
-    },
-  ],
+  dependencies: {
+    type: Array,
+  },
 });
 
 function savePreHook(done) {
