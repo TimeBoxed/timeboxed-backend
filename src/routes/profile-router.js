@@ -5,6 +5,7 @@ import { json } from 'body-parser';
 import HttpError from 'http-errors';
 
 import Profile from '../model/profile';
+import Preferences from '../model/preferences';
 import logger from '../lib/logger';
 import bearerAuthMiddleware from '../lib/bearer-auth-middleware';
 
@@ -52,6 +53,11 @@ profileRouter.delete('/profile/:id', bearerAuthMiddleware, (request, response, n
   return Profile.findById(request.params.id)
     .then((profile) => {
       if (!profile) return next(new HttpError(404, 'profile not found.'));
+      Preferences.findById(profile.preferences)
+        .then((pref) => {
+          logger.log(logger.INFO, 'DELETE - Preferences removed from DB');
+          pref.remove();
+        });
       logger.log(logger.INFO, 'DELETE - Profile successfully deleted.');
       profile.remove();
       return response.sendStatus(204);
