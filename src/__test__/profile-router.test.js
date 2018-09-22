@@ -2,6 +2,7 @@
 
 import superagent from 'superagent';
 import { startServer, stopServer } from '../lib/server';
+import { createPreferencesMock } from './lib/preference-mock';
 import { createProfileMock, removeProfileMock } from './lib/profile-mock';
 
 const apiURL = `http://localhost:${process.env.PORT}`;
@@ -68,9 +69,26 @@ describe('PROFILE ROUTES', () => {
             .send({ privacySigned: true });
         })
         .then((response) => {
-          expect(response.status).toEqual(200)
+          expect(response.status).toEqual(200);
           expect(response.body.privacySigned).toEqual(true);
           expect(response.body._id.toString()).toEqual(profileToUpdate._id.toString());
+        });
+    });
+  });
+
+  describe('PUT /profile/reset', () => {
+    test('should return 200 status code and reset prefereneces', () => {
+      let preferencesToCompare = null;
+      return createPreferencesMock()
+        .then((resultMock) => {
+          preferencesToCompare = resultMock.preferences;
+          return superagent.put(`${apiURL}/profile/reset`)
+            .set('Authorization', `Bearer ${resultMock.token}`);
+        })
+        .then((response) => {
+          expect(response.status).toEqual(200);
+          expect(response.body._id.toString()).toEqual(preferencesToCompare._id.toString());
+          expect(response.body.selectedCalendar.name).toEqual(preferencesToCompare.email);
         });
     });
   });

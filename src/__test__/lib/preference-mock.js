@@ -11,7 +11,7 @@ const createPreferencesMock = () => {
       resultMock = profileSetMock;
 
       return new Preferences({
-        email: faker.internet.email(),
+        email: profileSetMock.profile.email,
         selectedCalendar: faker.lorem.words(),
         profile: profileSetMock.profile._id,
       }).save();
