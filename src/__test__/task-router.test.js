@@ -145,18 +145,22 @@ describe('TASK ROUTES', () => {
 
   describe('PUT /tasks', () => {
     test('should return 200 status code and updated tasks', () => {
+      let originalTaskOrder = null;
       let updatedTaskOrder = null;
       return createManyTaskMocks(5)
         .then((resultMock) => {
+          originalTaskOrder = resultMock.manyTasks;
           updatedTaskOrder = [...resultMock.manyTasks];
+          updatedTaskOrder.unshift([...resultMock.manyTasks].pop());
           return superagent.put(`${apiURL}/tasks`)
             .set('Authorization', `Bearer ${resultMock.token}`)
-            .send(resultMock.manyTasks);
+            .send(updatedTaskOrder);
         })
         .then((response) => {
           expect(response.status).toEqual(200);
-          expect(response.body[0]._id.toString()).toEqual(updatedTaskOrder[0]._id.toString());
           expect(response.body[0].order).toEqual(0);
+          expect(response.body[0]._id.toString()).toEqual(updatedTaskOrder[0]._id.toString());
+          expect(response.body[0]._id.toString()).toEqual(originalTaskOrder[4]._id.toString());
         });
     });
   });

@@ -57,6 +57,7 @@ taskRouter.put('/tasks', bearerAuthMiddleware, jsonParser, (request, response, n
       });
   }))
     .then(() => {
+      updatedTasks.sort((a, b) => a.order - b.order);
       logger.log(logger.INFO, '200 - BULK TASK UPDATE');
       return response.json(updatedTasks);
     })
