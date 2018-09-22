@@ -3,7 +3,7 @@
 import superagent from 'superagent';
 import { startServer, stopServer } from '../lib/server';
 import { createProfileMock } from './lib/profile-mock';
-import { createTaskMock, removeTaskMock } from './lib/task-mock';
+import { createTaskMock, createManyTaskMocks, removeTaskMock } from './lib/task-mock';
 
 const apiURL = `http://localhost:${process.env.PORT}`;
 
@@ -111,6 +111,20 @@ describe('TASK ROUTES', () => {
     });
   });
 
+  describe('DELETE /tasks', () => {
+    test('should return 204 status code', () => {
+      return createTaskMock()
+        .then((taskMock) => {
+          return superagent.del(`${apiURL}/tasks`)
+            .set('Authorization', `Bearer ${taskMock.token}`)
+            .send([taskMock.task._id]);
+        })
+        .then((response) => {
+          expect(response.status).toEqual(204);
+        });
+    });
+  });
+
   describe('PUT /tasks/:taskId', () => {
     test('should return updated task and 200 status code', () => {
       let taskToUpdate = null;
@@ -125,6 +139,24 @@ describe('TASK ROUTES', () => {
           expect(response.status).toEqual(200);
           expect(response.body.title).toEqual('UPDATED TITLE');
           expect(response.body._id.toString()).toEqual(taskToUpdate._id.toString());
+        });
+    });
+  });
+
+  describe('PUT /tasks', () => {
+    test('should return 200 status code and updated tasks', () => {
+      let updatedTaskOrder = null;
+      return createManyTaskMocks(5)
+        .then((resultMock) => {
+          updatedTaskOrder = [...resultMock.manyTasks];
+          return superagent.put(`${apiURL}/tasks`)
+            .set('Authorization', `Bearer ${resultMock.token}`)
+            .send(resultMock.manyTasks);
+        })
+        .then((response) => {
+          expect(response.status).toEqual(200);
+          expect(response.body[0]._id.toString()).toEqual(updatedTaskOrder[0]._id.toString());
+          expect(response.body[0].order).toEqual(0);
         });
     });
   });

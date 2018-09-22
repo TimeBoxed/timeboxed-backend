@@ -40,22 +40,6 @@ describe('PROFILE ROUTES', () => {
     });
   });
 
-  describe('GET /profiles/:id', () => {
-    test('GET /profiles/:id - should return a 200 status and profile', () => {
-      let profileMock = null;
-
-      return createProfileMock()
-        .then((profileSetMock) => {
-          profileMock = profileSetMock;
-          return superagent.get(`${apiURL}/profiles/${profileMock.profile._id}`)
-            .set('Authorization', `Bearer ${profileMock.token}`)
-            .then((response) => {
-              expect(response.status).toEqual(200);
-            });
-        });
-    });
-  });
-
   describe('GET /profiles/calendars/:id', () => {
     test('should return 200 status code and profiles calendars', () => {
       let profileToCompare = null;

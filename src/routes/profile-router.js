@@ -23,15 +23,6 @@ profileRouter.get('/profiles/me', bearerAuthMiddleware, (request, response, next
     .catch(next);
 });
 
-// profileRouter.get('/profiles/:id', bearerAuthMiddleware, (request, response, next) => {
-//   return Profile.findById(request.params.id)
-//     .then((profile) => {
-//       logger.log(logger.INFO, 'Returning a 200 status code and requested Profile');
-//       return response.json(profile);
-//     })
-//     .catch(next);
-// });
-
 profileRouter.get('/profile/calendars/:id', bearerAuthMiddleware, (request, response, next) => {
   return Profile.findById(request.params.id)
     .then((profile) => {
