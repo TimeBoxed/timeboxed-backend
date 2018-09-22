@@ -97,20 +97,18 @@ describe('PROFILE ROUTES', () => {
 
   describe('DELETE - /profiles/:id', () => {
     test('DELETE - should return a 204 upon a successful Profile deletion.', () => {
-      let deleteProfileMock = null;
-
       return createProfileMock()
         .then((profileToDelete) => {
-          deleteProfileMock = profileToDelete;
-          return superagent.delete(`${apiURL}/profile/${deleteProfileMock.profile._id}`)
-            .set('Authorization', `Bearer ${deleteProfileMock.token}`)
+          return superagent.del(`${apiURL}/profile/${profileToDelete.profile._id}`)
+            .set('Authorization', `Bearer ${profileToDelete.token}`)
             .then((response) => {
               expect(response.status).toEqual(204);
             });
         });
     });
+
     test('DELETE - should return a 400 if no profile exists', () => {
-      return superagent.delete(`${apiURL}/profile/invalidID`)
+      return superagent.del(`${apiURL}/profile/invalidID`)
         .then(Promise.reject)
         .catch((error) => {
           expect(error.status).toEqual(400);
