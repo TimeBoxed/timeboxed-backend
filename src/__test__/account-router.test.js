@@ -22,5 +22,14 @@ describe('ACCOUNT ROUTES', () => {
             });
         });
     });
+
+    test('should throw 401 error if no token sent', () => {
+      return superagent.del(`${apiURL}/account`)
+        .set('Authorization', 'Bearer ')
+        .then(Promise.reject)
+        .catch((err) => {
+          expect(err.status).toEqual(401);
+        });
+    });
   });
 });
