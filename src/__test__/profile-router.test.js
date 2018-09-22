@@ -77,11 +77,12 @@ describe('PROFILE ROUTES', () => {
   });
 
   describe('PUT /profile/reset', () => {
-    test('should return 200 status code and reset prefereneces', () => {
+    test('should return 200 status code and reset preferences', () => {
       let preferencesToCompare = null;
-      return createPreferencesMock()
+      return createPreferencesMock(true)
         .then((resultMock) => {
           preferencesToCompare = resultMock.preferences;
+          expect(resultMock.preferences.breatherTime).toEqual(30);
           return superagent.put(`${apiURL}/profile/reset`)
             .set('Authorization', `Bearer ${resultMock.token}`);
         })
@@ -89,6 +90,7 @@ describe('PROFILE ROUTES', () => {
           expect(response.status).toEqual(200);
           expect(response.body._id.toString()).toEqual(preferencesToCompare._id.toString());
           expect(response.body.selectedCalendar.name).toEqual(preferencesToCompare.email);
+          expect(response.body.breatherTime).toEqual(15);
         });
     });
   });
