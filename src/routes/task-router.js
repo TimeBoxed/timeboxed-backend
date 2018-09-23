@@ -78,16 +78,18 @@ taskRouter.delete('/tasks/:taskId', bearerAuthMiddleware, (request, response, ne
 });
 
 taskRouter.delete('/tasks', bearerAuthMiddleware, jsonParser, (request, response, next) => {
+  const removedTaskIds = [];
   return Promise.all(request.body.map((oneTask) => {
     return Task.findById(oneTask)
       .then((task) => {
         logger.log(logger.INFO, `TASK ROUTER - REMOVING TASK ${task}`);
+        removedTaskIds.push(task._id);
         return task.remove();
       });
   }))
     .then(() => {
       logger.log(logger.INFO, '204 - TASKS DELETED');
-      return response.sendStatus(204);
+      return response.json(removedTaskIds);
     })
     .catch(next);
 });

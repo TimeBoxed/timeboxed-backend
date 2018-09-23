@@ -112,15 +112,20 @@ describe('TASK ROUTES', () => {
   });
 
   describe('DELETE /tasks', () => {
-    test('should return 204 status code', () => {
-      return createTaskMock()
-        .then((taskMock) => {
+    test('should return 200 status code and array of deleted task ids', () => {
+      let tasksToRemove = null;
+      return createManyTaskMocks(5)
+        .then((resultMock) => {
+          tasksToRemove = resultMock.manyTasks.map(task => task._id);
           return superagent.del(`${apiURL}/tasks`)
-            .set('Authorization', `Bearer ${taskMock.token}`)
-            .send([taskMock.task._id]);
+            .set('Authorization', `Bearer ${resultMock.token}`)
+            .send(resultMock.manyTasks);
         })
         .then((response) => {
-          expect(response.status).toEqual(204);
+          expect(response.status).toEqual(200);
+          expect(response.body).toHaveLength(5);
+          const responseIdsToString = response.body.map(item => item.toString());
+          expect(responseIdsToString.includes(tasksToRemove[0].toString())).toEqual(true);
         });
     });
   });
