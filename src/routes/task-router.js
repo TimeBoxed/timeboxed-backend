@@ -57,6 +57,7 @@ taskRouter.put('/tasks', bearerAuthMiddleware, jsonParser, (request, response, n
       });
   }))
     .then(() => {
+      updatedTasks.sort((a, b) => a.order - b.order);
       logger.log(logger.INFO, '200 - BULK TASK UPDATE');
       return response.json(updatedTasks);
     })
@@ -77,18 +78,18 @@ taskRouter.delete('/tasks/:taskId', bearerAuthMiddleware, (request, response, ne
 });
 
 taskRouter.delete('/tasks', bearerAuthMiddleware, jsonParser, (request, response, next) => {
-  const removedTasks = [];
+  const removedTaskIds = [];
   return Promise.all(request.body.map((oneTask) => {
     return Task.findById(oneTask)
       .then((task) => {
-        logger.log(logger.INFO, `TASK ROUTER - REMOVING TASK FOUND AT ${task}`);
-        removedTasks.push(task._id);
+        logger.log(logger.INFO, `TASK ROUTER - REMOVING TASK ${task}`);
+        removedTaskIds.push(task._id);
         return task.remove();
       });
   }))
     .then(() => {
-      logger.log(logger.INFO, '204 - TASK DELETED');
-      return response.json(removedTasks);
+      logger.log(logger.INFO, '204 - TASKS DELETED');
+      return response.json(removedTaskIds);
     })
     .catch(next);
 });

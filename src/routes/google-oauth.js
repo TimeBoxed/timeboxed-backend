@@ -79,7 +79,7 @@ const accountFindOrCreate = (user, response) => {
                 return response
                   .cookie('GT1234567890', token, { 
                     secure: false, 
-                    maxAge: 1800000, 
+                    maxAge: 18000000,
                     domain: process.env.DOMAIN,
                     path: '/', 
                     signed: false, 
@@ -97,7 +97,7 @@ const accountFindOrCreate = (user, response) => {
           return response
             .cookie('GT1234567890', token, { 
               secure: false, 
-              maxAge: 1800000, 
+              maxAge: 18000000,
               domain: process.env.DOMAIN,
               path: '/', 
               signed: false, 
@@ -144,7 +144,7 @@ googleRouter.get('/welcome', (request, response) => {
         return response
           .cookie('GT1234567890', token, { 
             secure: false, 
-            maxAge: 1800000, 
+            maxAge: 18000000,
             domain: process.env.DOMAIN,
             path: '/', 
             signed: false, 
@@ -195,7 +195,7 @@ googleRouter.get('/oauth/signin', (request, response) => {
         return response
           .cookie('GT1234567890', token, { 
             secure: false, 
-            maxAge: 1800000, 
+            maxAge: 18000000,
             domain: process.env.DOMAIN,
             path: '/', 
             signed: false, 
