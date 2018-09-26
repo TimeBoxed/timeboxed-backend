@@ -1,10 +1,15 @@
 'use strict';
 
+import superagent from 'superagent';
 import { Router } from 'express';
 import { json } from 'body-parser';
 import HttpError from 'http-errors';
 
 import Profile from '../model/profile';
+<<<<<<< HEAD
+=======
+import Task from '../model/task';
+>>>>>>> 187bcf6ec9ec2201d69dd59a0c55d31d649c7f74
 import Preferences from '../model/preferences';
 import logger from '../lib/logger';
 import bearerAuthMiddleware from '../lib/bearer-auth-middleware';
@@ -21,20 +26,36 @@ profileRouter.get('/profiles/me', bearerAuthMiddleware, (request, response, next
     .catch(next);
 });
 
-profileRouter.get('/profiles/:id', bearerAuthMiddleware, (request, response, next) => {
-  return Profile.findById(request.params.id)
-    .then((profile) => {
-      logger.log(logger.INFO, 'Returning a 200 status code and requested Profile');
-      return response.json(profile);
-    })
-    .catch(next);
-});
-
 profileRouter.get('/profile/calendars/:id', bearerAuthMiddleware, (request, response, next) => {
   return Profile.findById(request.params.id)
     .then((profile) => {
       logger.log(logger.INFO, 'Returning a 200 status code and requested Calendars in Profile Router');
       return response.send(profile.calendars);
+    })
+    .catch(next);
+});
+
+profileRouter.put('/profile/reset', bearerAuthMiddleware, (request, response, next) => {
+  const { profile } = request.account;
+  return Task.find({ profile })
+    .then((allTasks) => {
+      const taskIds = allTasks.map(task => task._id);
+      return superagent.del(`${process.env.API_URL}/tasks`)
+        .set('Authorization', `Bearer ${request.headers.authorization.split('Bearer ')[1]}`)
+        .send(taskIds);
+    })
+    .then(() => {
+      const options = { runValidators: true, new: true };
+      const defaultPreferences = {
+        agendaReceiveTime: '07:30',
+        taskLengthDefault: 30,
+        breatherTime: 15,
+        selectedCalendar: { name: request.account.email },
+      };
+      return Preferences.findOneAndUpdate({ profile }, defaultPreferences, options);
+    })
+    .then((resetPreferences) => {
+      return response.json(resetPreferences);
     })
     .catch(next);
 });

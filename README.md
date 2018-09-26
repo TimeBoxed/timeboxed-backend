@@ -26,6 +26,7 @@ GOOGLE_CLIENT_ID=<google-client-id>
 GOOGLE_SECRET=<google-secret>
 TIMEBOXED_SECRET=<long-random-string>
 HASH_SECRET_STRING=<long-random-string>
+DOMAIN=localhost
 
 ```
 
