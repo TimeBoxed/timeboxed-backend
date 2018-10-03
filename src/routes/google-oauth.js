@@ -10,6 +10,7 @@ require('dotenv').config();
 const GOOGLE_OAUTH_URL = 'https://www.googleapis.com/oauth2/v4/token';
 const GOOGLE_OPENID_URL = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect';
 const GOOGLE_CALENDAR_URL = 'https://www.googleapis.com/calendar/v3/users/me/calendarList';
+const TOKEN_EXPIRATION_TIME = 36000000;
 
 const googleRouter = new Router();
 
@@ -27,6 +28,7 @@ const createPreferences = (profile) => {
 };
 
 const createProfile = (user) => {
+  console.log('__CREATING NEW PROFILE__', user);
   return new Profile({
     username: user.username,
     email: user.email,
@@ -43,6 +45,7 @@ const getCalendars = (user) => {
   return superagent.get(GOOGLE_CALENDAR_URL)
     .set('Authorization', `Bearer ${user.googleToken}`)
     .then((calendarResponse) => {
+      console.log('__CALENDAR_RESPONSE__', calendarResponse.body.items);
       user.nextSyncToken = calendarResponse.body.nextSyncToken;
       calendarResponse.body.items.forEach((item) => {
         const calendar = {
@@ -64,8 +67,9 @@ const getCalendars = (user) => {
 const accountFindOrCreate = (user, response) => {
   return Account.findOne({ email: user.email })
     .then((account) => {
+      console.log(account);
       if (!account) {
-        return Account.create(user.email, user.username, user.googleToken)
+        return Account.create(user.email, user.username, user.googleToken, user.refreshToken)
           .then((newAccount) => {
             user.id = newAccount._id;
             return newAccount.pCreateLoginToken();
@@ -79,7 +83,7 @@ const accountFindOrCreate = (user, response) => {
                 return response
                   .cookie('GT1234567890', token, { 
                     secure: false, 
-                    maxAge: 18000000,
+                    maxAge: TOKEN_EXPIRATION_TIME,
                     domain: process.env.DOMAIN,
                     path: '/', 
                     signed: false, 
@@ -97,7 +101,7 @@ const accountFindOrCreate = (user, response) => {
           return response
             .cookie('GT1234567890', token, { 
               secure: false, 
-              maxAge: 18000000,
+              maxAge: TOKEN_EXPIRATION_TIME,
               domain: process.env.DOMAIN,
               path: '/', 
               signed: false, 
@@ -122,12 +126,16 @@ googleRouter.get('/welcome', (request, response) => {
         client_id: process.env.GOOGLE_CLIENT_ID,
         client_secret: process.env.GOOGLE_SECRET,
         redirect_uri: `${process.env.API_URL}/welcome`,
+        access_type: 'offline',
       })
       .then((tokenResponse) => {
+        // TODO: check for refresh token
+        console.log('__TOKEN RESPONSE__', tokenResponse.body);
         if (!tokenResponse.body.access_token) {
           return response.redirect(process.env.CLIENT_URL);
         }
         user.googleToken = tokenResponse.body.access_token;
+        if (tokenResponse.body.refresh_token) user.refreshToken = tokenResponse.body.refresh_token;
         return superagent.get(GOOGLE_OPENID_URL)
           .set('Authorization', `Bearer ${user.googleToken}`);
       })
@@ -143,8 +151,8 @@ googleRouter.get('/welcome', (request, response) => {
       .then((token) => {
         return response
           .cookie('GT1234567890', token, { 
-            secure: false, 
-            maxAge: 18000000,
+            secure: false,
+            maxAge: TOKEN_EXPIRATION_TIME,
             domain: process.env.DOMAIN,
             path: '/', 
             signed: false, 
@@ -160,6 +168,7 @@ googleRouter.get('/welcome', (request, response) => {
 // ------ Returning User ----------
 googleRouter.get('/oauth/signin', (request, response) => {
   const user = {};
+  console.log('__REQUEST.QUERY__', request.query);
   if (!request.query.code) {
     response.redirect(process.env.CLIENT_URL);
   } else {
@@ -195,7 +204,7 @@ googleRouter.get('/oauth/signin', (request, response) => {
         return response
           .cookie('GT1234567890', token, { 
             secure: false, 
-            maxAge: 18000000,
+            maxAge: TOKEN_EXPIRATION_TIME,
             domain: process.env.DOMAIN,
             path: '/', 
             signed: false, 
