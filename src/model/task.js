@@ -19,12 +19,17 @@ const taskSchema = mongoose.Schema({
   order: {
     type: Number,
   },
+  notes: {
+    type: String,
+    default: '',
+  },
   createdOn: {
     type: Date,
     default: () => new Date(),
   },
   dueDate: {
     type: Date,
+    default: '',
   },
   profile: {
     type: mongoose.Schema.ObjectId,
