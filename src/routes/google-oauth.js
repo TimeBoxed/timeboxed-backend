@@ -1,5 +1,6 @@
 import superagent from 'superagent';
 import { Router } from 'express';
+import HttpError from 'http-errors';
 import Account from '../model/account';
 import Profile from '../model/profile';
 import Preferences from '../model/preferences';
@@ -61,7 +62,7 @@ const getCalendars = (user) => {
     });
 };
 
-const accountFindOrCreate = (user, response) => {
+const accountFindOrCreate = (user) => {
   return Account.findOne({ email: user.email })
     .then((account) => {
       if (!account) {
@@ -74,37 +75,10 @@ const accountFindOrCreate = (user, response) => {
             return createProfile(user)
               .then(() => {
                 return token;
-              })
-              .then(() => {
-                return response
-                  .cookie('GT1234567890', token, { 
-                    secure: false, 
-                    maxAge: 18000000,
-                    domain: process.env.DOMAIN,
-                    path: '/', 
-                    signed: false, 
-                    httpOnly: false,
-                  })
-                  .redirect(`${process.env.CLIENT_URL}/privacy`);
               });
           });
       }
-      return account.pCreateLoginToken()
-        .then((token) => {
-          return token;
-        })
-        .then((token) => {
-          return response
-            .cookie('GT1234567890', token, { 
-              secure: false, 
-              maxAge: 18000000,
-              domain: process.env.DOMAIN,
-              path: '/', 
-              signed: false, 
-              httpOnly: false,
-            })
-            .redirect(`${process.env.CLIENT_URL}/dashboard`);
-        });
+      throw new HttpError(400, 'ACCOUNT FIND OR CREATE - Account already exists');
     });
 };
 
@@ -112,100 +86,102 @@ const accountFindOrCreate = (user, response) => {
 googleRouter.get('/welcome', (request, response) => {
   const user = {};
   if (!request.query.code) {
-    response.redirect(process.env.CLIENT_URL);
-  } else {
-    return superagent.post(GOOGLE_OAUTH_URL)
-      .type('form')
-      .send({
-        code: request.query.code,
-        grant_type: 'authorization_code',
-        client_id: process.env.GOOGLE_CLIENT_ID,
-        client_secret: process.env.GOOGLE_SECRET,
-        redirect_uri: `${process.env.API_URL}/welcome`,
-      })
-      .then((tokenResponse) => {
-        if (!tokenResponse.body.access_token) {
-          return response.redirect(process.env.CLIENT_URL);
-        }
-        user.googleToken = tokenResponse.body.access_token;
-        return superagent.get(GOOGLE_OPENID_URL)
-          .set('Authorization', `Bearer ${user.googleToken}`);
-      })
-      .then((openIdResponse) => {
-        user.username = openIdResponse.body.name;
-        user.email = openIdResponse.body.email;
-        return getCalendars(user);
-      })
-      .then((calendars) => {
-        user.calendars = calendars;
-        return accountFindOrCreate(user, response);
-      })
-      .then((token) => {
-        return response
-          .cookie('GT1234567890', token, { 
-            secure: false, 
-            maxAge: 18000000,
-            domain: process.env.DOMAIN,
-            path: '/', 
-            signed: false, 
-            httpOnly: false,
-          })
-          .redirect(`${process.env.CLIENT_URL}/dashboard`);
-      })
-      .catch(err => console.log(err.message));
+    return response.redirect(process.env.CLIENT_URL);
   }
-  return response.redirect(process.env.CLIENT_URL);
+  return superagent.post(GOOGLE_OAUTH_URL)
+    .type('form')
+    .send({
+      code: request.query.code,
+      grant_type: 'authorization_code',
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      client_secret: process.env.GOOGLE_SECRET,
+      redirect_uri: `${process.env.API_URL}/welcome`,
+    })
+    .then((tokenResponse) => {
+      if (!tokenResponse.body.access_token) {
+        return response.redirect(process.env.CLIENT_URL);
+      }
+      user.googleToken = tokenResponse.body.access_token;
+      return superagent.get(GOOGLE_OPENID_URL)
+        .set('Authorization', `Bearer ${user.googleToken}`);
+    })
+    .then((openIdResponse) => {
+      user.username = openIdResponse.body.name;
+      user.email = openIdResponse.body.email;
+      return getCalendars(user);
+    })
+    .then((calendars) => {
+      user.calendars = calendars;
+      return accountFindOrCreate(user);
+    })
+    .then((token) => {
+      return response
+        .cookie('GT1234567890', token, {
+          secure: false,
+          maxAge: 18000000,
+          domain: process.env.DOMAIN,
+          path: '/',
+          signed: false,
+          httpOnly: false,
+        })
+        .redirect(`${process.env.CLIENT_URL}/privacy`);
+    })
+    .catch((err) => {
+      logger.log(logger.ERROR, err.message);
+      return response.redirect(process.env.CLIENT_URL);
+    });
 });
 
 // ------ Returning User ----------
 googleRouter.get('/oauth/signin', (request, response) => {
   const user = {};
   if (!request.query.code) {
-    response.redirect(process.env.CLIENT_URL);
-  } else {
-    return superagent.post(GOOGLE_OAUTH_URL)
-      .type('form')
-      .send({
-        code: request.query.code,
-        grant_type: 'authorization_code',
-        client_id: process.env.GOOGLE_CLIENT_ID,
-        client_secret: process.env.GOOGLE_SECRET,
-        redirect_uri: `${process.env.API_URL}/oauth/signin`,
-      })
-      .then((tokenResponse) => {
-        if (!tokenResponse.body.access_token) {
-          return response.redirect(process.env.CLIENT_URL);
-        }
-        user.googleToken = tokenResponse.body.access_token;
-        return superagent.get(GOOGLE_OPENID_URL)
-          .set('Authorization', `Bearer ${user.googleToken}`);
-      })
-      .then((openIdResponse) => {
-        user.username = openIdResponse.body.name;
-        user.email = openIdResponse.body.email;
-        return Account.findOne({ email: user.email });
-      })
-      .then((account) => {
-        if (!account) {
-          return response.redirect(`${process.env.CLIENT_URL}/signup`);
-        }
-        return account.pCreateLoginToken();
-      })
-      .then((token) => {
-        return response
-          .cookie('GT1234567890', token, { 
-            secure: false, 
-            maxAge: 18000000,
-            domain: process.env.DOMAIN,
-            path: '/', 
-            signed: false, 
-            httpOnly: false,
-          })
-          .redirect(`${process.env.CLIENT_URL}/dashboard`);
-      })
-      .catch(err => console.log(err.message));
+    return response.redirect(process.env.CLIENT_URL);
   }
-  return response.redirect(process.env.CLIENT_URL);
+  return superagent.post(GOOGLE_OAUTH_URL)
+    .type('form')
+    .send({
+      code: request.query.code,
+      grant_type: 'authorization_code',
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      client_secret: process.env.GOOGLE_SECRET,
+      redirect_uri: `${process.env.API_URL}/oauth/signin`,
+    })
+    .then((tokenResponse) => {
+      if (!tokenResponse.body.access_token) {
+        return response.redirect(process.env.CLIENT_URL);
+      }
+      user.googleToken = tokenResponse.body.access_token;
+      return superagent.get(GOOGLE_OPENID_URL)
+        .set('Authorization', `Bearer ${user.googleToken}`);
+    })
+    .then((openIdResponse) => {
+      user.username = openIdResponse.body.name;
+      user.email = openIdResponse.body.email;
+      return Account.findOne({ email: user.email });
+    })
+    .then((account) => {
+      if (!account) {
+        return response.redirect(`${process.env.CLIENT_URL}/signup`);
+      }
+      return account.pCreateLoginToken()
+        .then((token) => {
+          return response
+            .cookie('GT1234567890', token, {
+              secure: false,
+              maxAge: 18000000,
+              domain: process.env.DOMAIN,
+              path: '/',
+              signed: false,
+              httpOnly: false,
+            })
+            .redirect(`${process.env.CLIENT_URL}/dashboard`);
+        });
+    })
+    .catch((err) => {
+      logger.log(logger.ERROR, err.message);
+      return response.redirect(process.env.CLIENT_URL);
+    });
 });
 
 export default googleRouter;
