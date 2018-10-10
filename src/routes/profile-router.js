@@ -71,13 +71,13 @@ profileRouter.delete('/profile/:id', bearerAuthMiddleware, (request, response, n
   return Profile.findById(request.params.id)
     .then((profile) => {
       if (!profile) return next(new HttpError(404, 'profile not found.'));
-      Preferences.findById(profile.preferences)
-        .then((pref) => {
-          if (pref) {
+      if (profile.preferences) {
+        Preferences.findById(profile.preferences)
+          .then((pref) => {
             logger.log(logger.INFO, 'DELETE - Preferences removed from DB');
             pref.remove();
-          }
-        });
+          });
+      }
       logger.log(logger.INFO, 'DELETE - Profile successfully deleted.');
       profile.remove();
       return response.sendStatus(204);
