@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import HttpError from 'http-errors';
 import Profile from './profile';
 
+
 const preferencesSchema = mongoose.Schema({
   phoneNumber: {
     type: String,
