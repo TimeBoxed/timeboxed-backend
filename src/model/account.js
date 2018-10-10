@@ -23,6 +23,10 @@ const accountSchema = mongoose.Schema({
     required: true,
     unique: true,
   },
+  refreshToken: {
+    type: String,
+    unique: true,
+  },
   username: {
     type: String,
     required: true,
@@ -50,13 +54,14 @@ accountSchema.methods.pCreateLoginToken = pCreateLoginToken;
 
 const Account = mongoose.model('account', accountSchema);
 
-Account.create = (email, username, googleToken) => {
+Account.create = (email, username, googleToken, refreshToken) => {
   const tokenSeed = crypto.randomBytes(TOKEN_SEED_LENGTH).toString('hex');
   return new Account({
     username,
     email,
     tokenSeed,
     googleToken,
+    refreshToken,
   }).save();
 };
 
